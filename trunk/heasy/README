@@ -1,0 +1,7 @@
+HEASY source scripts
+
+experiment_template/ - high-level scripts to build acoustic models and perform phone and word recognition
+src/ - low-level scripts
+utility_scripts/ - useful highly-application-specific scripts (included for examples)
+config/ - example punctuation.txt file used to preprocess transcription text
+

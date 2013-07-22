@@ -1,0 +1,136 @@
+HEASY LWAZI Example
+--------------------------
+
+In this README we describe an experiment
+which develops grapheme-based acoustic models
+using the Lwazi English sub-corpus.
+ 
+We assume that HEASY is located in '../heasy/'
+and bash, HTK binaries and perl are installed
+and located in the environment path ($PATH).
+
+htksortdict must be install to /usr/local/bin
+(Goto '../heasy/src/' and type 'sudo make')
+
+If your machine has multiple cores, set the NUM_HEREST_PROCS
+variable in Vars.sh to the number of cores.
+
+For a better understanding on the HEASY scripts
+please read 'README' and 'TUTORIAL' found in '../heasy/' directory.
+
+
+1) Fetch Lwazi Resources and Unzip:
+----------------------------------
+
+Download the English Lwazi sub-corpus
+and unzip the contents to './data/' directory
+
+In a terminal run the script:
+$ ./1_fetch_lwazi.sh
+
+2) Copy experiment_template scripts and fix Vars.sh:
+----------------------------------------------
+
+Copy the scripts found in '../heasy/experimental_template/' to
+the current directory and fix the Vars.sh. The 
+variables in Vars.sh will point to some resources
+which will not have been created at this stage but
+will be created a bit later.
+
+In a terminal run the script:
+$ ./2_cp_template_and_fix_vars.sh
+
+3) Feature Extraction:
+----------------------
+
+Convert Lwazi audio to MFCC features using 'FEATURE_EXTRACTION.sh'.
+Mfccs features will be extracted to './data/mfccs/'
+using script file './data/mfcc.scp'.
+
+In a terminal run the script:
+$ ./3_create_feats.sh
+
+4) Clean Trancriptions:
+-----------------------
+
+Preprocess Lwazi text and place the cleaned text
+in directory './data/texts/'. 'PREPROC.sh' will be used to 
+clean the text. A custom 'punctuation.txt' will be placed in 
+'./config/' directory.
+
+In a terminal run the script:
+$ ./4_clean_text.sh
+
+5) Create a grapheme dictionary:
+------------------------------
+
+Create a unique wordlist from the cleaned texts
+files and break the words into letters.
+Grapheme dictionary stored in 'dicts/english.graph.dict'
+
+In a terminal run the script:
+$ ./5_create_graph_dict.sh
+
+6) Create training and testing lists:
+-------------------------------------
+
+Create audio_trn.lst, audio_tst.lst, trans_trn.lst and
+trans_tst.lst and place in directory 'lists/'. Files
+with speaker tags 01? and 02? were chosen placed in
+the test set.
+
+In a terminal run the script:
+$ ./6_create_lists.sh
+
+7) Check the data and train the acoustic models:
+------------------------------------------------
+
+Run the 'CHECK.sh' script to check that all data is proper
+and in place to train the acoustic models. If the check
+completes without error, then 'TRAIN.sh' will be called which
+will train the acoustic models. The training procedure will
+terminate on any errors. If this happens review the logs files
+found in './experiment/logs/' - specifically *.err files.
+
+In a terminal run the script:
+$ ./7_check_and_train.sh
+
+8) Perform phone recognition:
+-----------------------------
+
+Once the acoustic models have been trained, a phone recognition
+can be performed. The phone results can be found in 
+'./experiment/logs/phone_results.log'. It should contain something
+similar to:
+
+====================== HTK Results Analysis =======================
+  Date: Wed Jul 17 22:46:46 2013
+  Ref : >e/heasy/tags/voices/example/experiment/mlfs/monophones_tst.mlf
+  Rec : >/heasy/tags/voices/example/experiment/results/test_results.mlf
+------------------------ Overall Results --------------------------
+SENT: %Correct=6.18 [H=37, S=562, N=599]
+WORD: %Corr=66.55, Acc=44.52 [H=12985, D=1823, S=4705, I=4297, N=19513]
+===================================================================
+
+In a terminal run the script:
+$ ./8_phone_rec.sh
+
+9) Perform word recognition:
+----------------------------
+
+A word recognition can also be performed. The word results can be found in 
+'./experiment/logs/word_results.log'. It should contain something
+similar to:
+
+====================== HTK Results Analysis =======================
+  Date: Fri Jul 19 11:36:54 2013
+  Ref : >kspace/heasy/tags/voices/example/experiment/mlfs/words_tst.mlf
+  Rec : >/heasy/tags/voices/example/experiment/results/test_results.mlf
+------------------------ Overall Results --------------------------
+SENT: %Correct=0.00 [H=0, S=599, N=599]
+WORD: %Corr=35.81, Acc=-115.73 [H=1478, D=14, S=2635, I=6254, N=4127]
+===================================================================
+
+In a terminal run the script:
+$ ./9_word_rec.sh
+

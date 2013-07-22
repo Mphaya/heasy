@@ -1,0 +1,33 @@
+HEASY provides scripts to create HTK acoustic models
+and use the acoustic model for recognition.
+Note the software was written for Linux systems only!
+
+1) Install HTK 3.4.1:
+---------------------
+
+- Download HTK source from http://htk.eng.cam.ac.uk/
+- Unpack
+- Change in build directory
+- Run 'make' and 'make install'
+- Make sure the location of the HTK binaries is set in the path
+
+2) Install Bash:
+---------------
+
+Should be installed by default on most Linux systems.
+Tested using bash version 4.2.37(1)-release.
+
+3) Install Perl:
+----------------
+
+Tested using perl version v5.14.2.
+
+4) Install htksortdict:
+-----------------------
+
+htksortdict will be installed to /usr/local/bin.
+Edit the Makefile (located in directory hasr/src/) to change the install path.
+
+- cd src/
+- sudo make
+

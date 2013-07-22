@@ -1,0 +1,234 @@
+#
+#   Copyright 2013 CSIR Meraka HLT and Multilingual Speech Technologies (MuST) North-West University
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+
+diff -uNr htk/HTKLib/HMath.c htka/HTKLib/HMath.c
+--- htk/HTKLib/HMath.c	2013-07-09 22:23:25.470021353 +0200
++++ htka/HTKLib/HMath.c	2013-07-09 22:24:10.914019776 +0200
+@@ -66,6 +66,15 @@
+    for (i=1;i<=n;i++) v[i]=0;
+ }
+ 
++/* EXPORT->ZeroLongVec: Zero the elements of v */
++void ZeroLongVec(LongVec v)
++{
++   int i,n;
++   
++   n=LongVecSize(v);
++   for (i=1;i<=n;i++) v[i]=0;
++}
++
+ /* EXPORT->ZeroIntVec: Zero the elements of v */
+ void ZeroIntVec(IntVec v)
+ {
+diff -uNr htk/HTKLib/HMath.h htka/HTKLib/HMath.h
+--- htk/HTKLib/HMath.h	2013-07-12 16:12:14.723426540 +0200
++++ htka/HTKLib/HMath.h	2013-07-09 22:24:10.914019776 +0200
+@@ -78,6 +78,7 @@
+ /* ------------------ Vector Oriented Routines ----------------------- */
+ 
+ void ZeroShortVec(ShortVec v);
++void ZeroLongVec(LongVec v);
+ void ZeroIntVec(IntVec v);
+ void ZeroVector(Vector v);
+ void ZeroDVector(DVector v);
+diff -uNr htk/HTKLib/HMem.c htka/HTKLib/HMem.c
+--- htk/HTKLib/HMem.c	2013-07-09 22:23:25.470021353 +0200
++++ htka/HTKLib/HMem.c	2013-07-09 22:24:10.926019779 +0200
+@@ -543,6 +543,7 @@
+ 
+ /* EXPORT->vectorElemSize: size of vectors for creating heaps */
+ size_t ShortVecElemSize(int size) { return (size+1)*sizeof(short); }
++size_t LongVecElemSize(int size) { return (size+1)*sizeof(long); }
+ size_t IntVecElemSize(int size) { return (size+1)*sizeof(int); }
+ size_t VectorElemSize(int size) { return (size+1)*sizeof(float); }
+ size_t DVectorElemSize(int size){ return (size+1)*sizeof(double);}
+@@ -558,6 +559,15 @@
+    return (ShortVec)v;
+ }
+ 
++/* EXPORT->CreateLongVec:  Allocate space for short array v[1..size] */
++LongVec CreateLongVec(MemHeap *x,int size)
++{
++   long *v;
++   
++   v = (long *)New(x,LongVecElemSize(size));
++   *v = size;
++   return (LongVec)v;
++}
+ 
+ /* EXPORT->CreateIntVec:  Allocate space for int array v[1..size] */
+ IntVec CreateIntVec(MemHeap *x,int size)
+@@ -613,6 +623,12 @@
+    return (int)(*v);
+ }
+ 
++/* EXPORT->LongVecSize: returns number of components in v */
++int LongVecSize(LongVec v)
++{
++   return (int)(*v);
++}
++
+ /* EXPORT->IntVecSize: returns number of components in v */
+ int IntVecSize(IntVec v)
+ {
+@@ -642,6 +658,12 @@
+ {
+    Dispose(x,v);
+ }
++
++/* EXPORT->FreeShortVec: Free space allocated for short vector v */
++void FreeLongVec(MemHeap *x,LongVec v)
++{
++   Dispose(x,v);
++}
+ 
+ /* EXPORT->FreeIntVec: Free space allocated for int vector v */
+ void FreeIntVec(MemHeap *x,IntVec v)
+diff -uNr htk/HTKLib/HMem.h htka/HTKLib/HMem.h
+--- htk/HTKLib/HMem.h	2013-07-09 22:23:25.470021353 +0200
++++ htka/HTKLib/HMem.h	2013-07-09 22:24:10.926019779 +0200
+@@ -155,6 +155,7 @@
+ 
+ /* Basic Numeric Types */
+ typedef short *ShortVec;   /* short vector[1..size] */
++typedef long *LongVec;   /* short vector[1..size] */
+ typedef int   *IntVec;     /* int vector[1..size] */
+ typedef float *Vector;     /* vector[1..size]   */
+ typedef float **Matrix;    /* matrix[1..nrows][1..ncols] */
+@@ -168,6 +169,7 @@
+ typedef Matrix STriMat;    /* shared matrix[1..nrows][1..i] (lower tri) */
+ 
+ size_t ShortVecElemSize(int size);
++size_t LongVecElemSize(int size);
+ size_t IntVecElemSize(int size);
+ size_t VectorElemSize(int size);
+ size_t DVectorElemSize(int size);
+@@ -178,6 +180,7 @@
+ */
+ 
+ ShortVec CreateShortVec(MemHeap *x,int size);
++LongVec CreateLongVec(MemHeap *x,int size);
+ IntVec   CreateIntVec(MemHeap *x,int size);
+ Vector   CreateVector(MemHeap *x,int size);
+ DVector  CreateDVector(MemHeap *x,int size);
+@@ -189,6 +192,7 @@
+ */
+ 
+ int ShortVecSize(ShortVec v);
++int LongVecSize(LongVec v);
+ int IntVecSize(IntVec v);
+ int VectorSize(Vector v);
+ int DVectorSize(DVector v);
+@@ -197,6 +201,7 @@
+ */
+ 
+ void FreeShortVec(MemHeap *x,ShortVec v);
++void FreeLongVec(MemHeap *x,LongVec v);
+ void FreeIntVec(MemHeap *x,IntVec v);
+ void FreeVector(MemHeap *x,Vector v);
+ void FreeDVector(MemHeap *x,DVector v);
+diff -uNr htk/HTKTools/HResults.c htka/HTKTools/HResults.c
+--- htk/HTKTools/HResults.c	2013-07-09 22:23:38.518020900 +0200
++++ htka/HTKTools/HResults.c	2013-07-09 22:24:10.934019778 +0200
+@@ -1164,9 +1164,12 @@
+ 
+ #define MAXCONMATSIZE 200
+ 
+-static ShortVec *conMat;  /* confusion matrix, conMat[i][j] is the number of
++static LongVec *conMat;  /* confusion matrix, conMat[i][j] is the number of
+                              times label i was recognised as label j */
+-static ShortVec conDel,conIns; /* corresponding deletion and insertion counts */
++static LongVec conDel,conIns; /* corresponding deletion and insertion counts */
++/*static long **conMat;  confusion matrix, conMat[i][j] is the number of
++                             times label i was recognised as label j */
++/*static long *conDel,*conIns; corresponding deletion and insertion counts */
+ 
+ /* InitConMat:  allocate and initialise confusion matrix */
+ void InitConMat(void)
+@@ -1175,23 +1178,24 @@
+ 
+    if (nLabs>MAXCONMATSIZE)
+       HError(3332,"InitConMat: Confusion matrix would be too large");
+-   conMat = (ShortVec *) New(&permHeap, nLabs*sizeof(ShortVec));
++   conMat = (LongVec *) New(&permHeap, nLabs*sizeof(LongVec));
+    --conMat;                    /* index is 1..nLabs */
+    for (i=1;i<=nLabs;i++){
+-      conMat[i]=CreateShortVec(&permHeap,nLabs);
+-      ZeroShortVec(conMat[i]);
++      conMat[i]=CreateLongVec(&permHeap,nLabs);
++      ZeroLongVec(conMat[i]);
+    }  
+-   conDel=CreateShortVec(&permHeap,nLabs);
+-   ZeroShortVec(conDel);
+-   conIns=CreateShortVec(&permHeap,nLabs);
+-   ZeroShortVec(conIns);
++   conDel=CreateLongVec(&permHeap,nLabs);
++   ZeroLongVec(conDel);
++   conIns=CreateLongVec(&permHeap,nLabs);
++   ZeroLongVec(conIns);
+ }
+ 
+ /* OutConMat: output the confusion matrix */
+ void OutConMat(void)
+ {
+    Boolean *seen;
+-   int i,j,k,err,rowerr,maxlen;
++   int i,j;
++   long err,rowerr,maxlen,k;
+    char *s,c,buf[64];
+    float correct, errprop;
+ 
+@@ -1215,10 +1219,10 @@
+          if (!seen[i]) continue;
+          s = names[i]->name;
+          c = (j<strlen(s))?s[j]:' ';
+-         printf("  %c ",c);
++         printf("  %c    ",c);
+       }
+       if (j==maxlen-1)
+-         printf(" Del [ %%c / %%e]");
++         printf("   Del [ %%c / %%e]");
+       printf("\n");
+    }
+    for (i=1;i<=nLabs;i++){
+@@ -1233,11 +1237,15 @@
+          err = conMat[i][j];
+          if (i!=j) rowerr += err;
+          if (err<100)
+-            printf(" %2d ",err);
++            printf("    %2ld ",err);
++         else if (err<1000)
++            printf("   %3ld ",err);
++         else if (err<10000)
++            printf("  %4ld ",err);
+          else
+-            printf("%4d",err);
++            printf(" %5ld ",err);
+       }
+-      printf("%4d",conDel[i]);
++      printf("  %4d",conDel[i]);
+       if (rowerr>0) {
+          correct = 100.0*(float)conMat[i][i]/(float)(conMat[i][i]+rowerr);
+          errprop = 100.0*(float)rowerr/(float)nsyms;
+@@ -1248,7 +1256,7 @@
+    printf("Ins ");
+    for (j=1; j<=nLabs; j++) {
+       if (!seen[j]) continue;
+-      printf("%4d",conIns[j]);
++      printf("  %5d",conIns[j]);
+    }
+    printf("\n");
+    seen++;
