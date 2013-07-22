@@ -1,0 +1,16 @@
+The htk.patch file contains a patch to modify the HResults.c source 
+to display a reformatted Confusion Matrix output.
+
+Applying The Patch:
+-------------------
+
+$ mkdir tmp/
+$ cp /*PATH*/*TO*/HTK-3.4.1.tar.gz tmp/
+$ cd tmp/
+$ tar -zxf HTK-3.4.1.tar.gz
+$ cp /*PATH*/*TO*/htk_patches/htk.patch tmp/
+$ patch -p0 < htk.patch
+
+
+The HTK source (located in htk/) will be patched and can be built as normal.
+
