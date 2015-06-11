@@ -1,0 +1,1 @@
+HEasy provides scripts to develop acoustic models using HTK. The scripts provide functionality for feature extraction, text preprocessing, resource verification, acoustic model training and phone & word recognition.
